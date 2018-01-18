@@ -20,52 +20,20 @@
 //Logic of methods described in header
 //Логика методов описана в заголовочном файле
 
-+(void) copyTo: (Fraction*) dest from: (Fraction*) source {
-    [dest setNumerator: [source numerator]];
-    [dest setDenominator: [source denominator]];
-}
-
--(NSString*) toNSString {
-    NSString* result = @"";
-    if (numerator * denominator < 0)
-        result = [result stringByAppendingString: @"-"];
-    result = [result stringByAppendingString: [NSString stringWithFormat: @"%i ", abs(numerator)]];
-    if (numerator != 0 && abs(denominator) != 1)
-        result = [result stringByAppendingString: [NSString stringWithFormat: @"/ %i ", abs(denominator)]];
-    return result;
-}
-
--(double) toDouble {
-    return numerator * 1.0 / denominator;
-}
-
--(void) setNumerator: (int) numerator {
-    self->numerator = numerator;
-}
-
--(void) setDenominator: (int) denominator {
-    self->denominator = denominator == 0 ? 1 : denominator;
-}
-
--(Fraction*) sum: (Fraction*) other {
-    Fraction* result = [[Fraction alloc] init];
-    [result setDenominator: lcm(denominator, [other denominator])];
-    [result setNumerator: numerator * [result denominator] / denominator + [other numerator] * [result denominator] / [other denominator]];
-    return result;
-}
-
--(Fraction*) substract: (Fraction*) other {
-    Fraction* result = [[Fraction alloc] init];
-    [result setDenominator: lcm(denominator, [other denominator])];
-    [result setNumerator: numerator * [result denominator] / denominator - [other numerator] * [result denominator] / [other denominator]];
-    return result;
-}
-
 -(Fraction*) composition: (Fraction*) other {
     Fraction* result = [[Fraction alloc] init];
     [result setDenominator: denominator * [other denominator]];
     [result setNumerator: numerator * [other numerator]];
     return result;
+}
+
++(void) copyTo: (Fraction*) dest from: (Fraction*) source {
+    [dest setNumerator: [source numerator]];
+    [dest setDenominator: [source denominator]];
+}
+
+-(int) denominator {
+    return denominator;
 }
 
 -(Fraction*) division: (Fraction*) other {
@@ -75,16 +43,32 @@
     return result;
 }
 
--(bool) proper {
-    return abs(numerator) < abs(denominator);
+-(Fraction*) fractionalPart {
+    Fraction* result = [[Fraction alloc] init];
+    [result setNumerator: numerator % denominator];
+    [result setDenominator: denominator];
+    return result;
+}
+
+-(int) intPart {
+    return numerator / denominator;
+}
+
+-(bool) irreducible {
+    return gcd(numerator, denominator) == 1 || gcd(numerator, denominator) == 0 ? true : false;
 }
 
 -(int) numerator {
     return numerator;
 }
 
--(int) denominator {
-    return denominator;
+-(bool) proper {
+    return abs(numerator) < abs(denominator);
+}
+
+
+-(void) reduce {
+    [Fraction copyTo: self from: [self reducedClone]];
 }
 
 -(Fraction*) reducedClone {
@@ -100,30 +84,43 @@
     return clone;
 }
 
--(void) reduce {
-    [Fraction copyTo: self from: [self reducedClone]];
+-(void) setDenominator: (int) denominator {
+    self->denominator = denominator == 0 ? 1 : denominator;
 }
 
--(bool) irreducible {
-    return gcd(numerator, denominator) == 1 || gcd(numerator, denominator) == 0 ? true : false;
+-(void) setNumerator: (int) numerator {
+    self->numerator = numerator;
 }
 
--(int) intPart {
-    return numerator / denominator;
-}
-
--(Fraction*) fractionalPart {
+-(Fraction*) substract: (Fraction*) other {
     Fraction* result = [[Fraction alloc] init];
-    [result setNumerator: numerator % denominator];
-    [result setDenominator: denominator];
+    [result setDenominator: lcm(denominator, [other denominator])];
+    [result setNumerator: numerator * [result denominator] / denominator - [other numerator] * [result denominator] / [other denominator]];
+    return result;
+}
+
+-(Fraction*) sum: (Fraction*) other {
+    Fraction* result = [[Fraction alloc] init];
+    [result setDenominator: lcm(denominator, [other denominator])];
+    [result setNumerator: numerator * [result denominator] / denominator + [other numerator] * [result denominator] / [other denominator]];
+    return result;
+}
+
+-(double) toDouble {
+    return numerator * 1.0 / denominator;
+}
+
+-(NSString*) toNSString {
+    NSString* result = @"";
+    if (numerator * denominator < 0)
+        result = [result stringByAppendingString: @"-"];
+    result = [result stringByAppendingString: [NSString stringWithFormat: @"%i ", abs(numerator)]];
+    if (numerator != 0 && abs(denominator) != 1)
+        result = [result stringByAppendingString: [NSString stringWithFormat: @"/ %i ", abs(denominator)]];
     return result;
 }
 
 @end
-
-int lcm (int left, int right) {
-    return abs(left) * abs(right) / gcd(left, right);
-}
 
 int gcd (int left, int right) {
     if (left == 0 && right == 0)
@@ -137,4 +134,8 @@ int gcd (int left, int right) {
         if (!(absLeft % result || absRight % result))
             return result;
     return 1;
+}
+
+int lcm (int left, int right) {
+    return abs(left) * abs(right) / gcd(left, right);
 }
