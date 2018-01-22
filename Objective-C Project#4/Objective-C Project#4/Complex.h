@@ -26,6 +26,10 @@
 //Метод, возвращающий результат умножения чисел left и right (left * right)
 +(Complex*) multiply: (Complex*) left and: (Complex*) right;
 
+//n-th power of complex number
+//n-я степень комплексного числа
++(Complex*) pow: (Complex*) number to: (int) power;
+
 //Method returning result of substraction of left and right (left - right)
 //Метод, возвращающий результат вычитания из left числа right (left - right)
 +(Complex*) substract: (Complex*) left and: (Complex*) right;
@@ -69,6 +73,10 @@
 //Getter for real part of complex number
 //Геттер для действительной части комплексного числа
 -(double) real;
+
+//Setter for default to convert to string form of complex number
+//Сеттер для формы комплексного числа при преобразовании в строку по-умолчанию
+-(void) setDefaultForm: (char) defaultForm;
 
 //Setter for imaginary part of complex number
 //Сеттер для мнимой части комплексного числа
